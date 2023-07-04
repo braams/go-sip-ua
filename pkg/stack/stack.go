@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"net/http"
 	"strings"
 	"sync"
 	"time"
@@ -178,6 +179,10 @@ func (s *SipStack) Listen(protocol string, listenAddr string) error {
 	return s.ListenTLS(protocol, listenAddr, nil)
 }
 
+func (s *SipStack) Connect(url string, header http.Header) error {
+	return s.tp.Connect(url, header)
+}
+
 func (s *SipStack) serve() {
 	defer s.Shutdown()
 
@@ -291,7 +296,7 @@ func (s *SipStack) handleRequest(req sip.Request, tx sip.ServerTransaction) {
 	go handler(req, tx)
 }
 
-//Request Send SIP message
+// Request Send SIP message
 func (s *SipStack) Request(req sip.Request) (sip.ClientTransaction, error) {
 	if !s.running.IsSet() {
 		return nil, fmt.Errorf("can not send through stopped server")
