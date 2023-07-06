@@ -173,7 +173,9 @@ func (s *Session) StoreResponse(response sip.Response) {
 			//Update to URI.
 			s.remoteURI = sip.Address{Uri: to.Address, Params: to.Params}
 		}
-
+		if contact, found := response.Contact(); found {
+			s.remoteTarget = contact.Address.Clone()
+		}
 		sdp := response.Body()
 		if len(sdp) > 0 {
 			s.answer = sdp
