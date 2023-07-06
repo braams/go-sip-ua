@@ -35,16 +35,17 @@ func NewSessionKey(callID sip.CallID, tagID sip.MaybeString) SessionKey {
 
 // UserAgentConfig .
 type UserAgentConfig struct {
-	SipStack *stack.SipStack
+	SipStack         *stack.SipStack
+	DefaultTransport string
 }
 
-//InviteSessionHandler .
+// InviteSessionHandler .
 type InviteSessionHandler func(s *session.Session, req *sip.Request, resp *sip.Response, status session.Status)
 
-//RegisterHandler .
+// RegisterHandler .
 type RegisterHandler func(regState account.RegisterState)
 
-//UserAgent .
+// UserAgent .
 type UserAgent struct {
 	InviteStateHandler   InviteSessionHandler
 	RegisterStateHandler RegisterHandler
@@ -53,7 +54,7 @@ type UserAgent struct {
 	log                  log.Logger
 }
 
-//NewUserAgent .
+// NewUserAgent .
 func NewUserAgent(config *UserAgentConfig) *UserAgent {
 	ua := &UserAgent{
 		config:               config,
@@ -124,6 +125,9 @@ func (ua *UserAgent) buildRequest(
 	if err != nil {
 		ua.Log().Errorf("err => %v", err)
 		return nil, err
+	}
+	if ua.config.DefaultTransport != "" {
+		req.SetTransport(ua.config.DefaultTransport)
 	}
 
 	//ua.Log().Infof("buildRequest %s => \n%v", method, req)
