@@ -413,6 +413,6 @@ func (s *Session) makeRequest(uaType string, method sip.RequestMethod, msgID sip
 	cseq, _ := newRequest.CSeq()
 	cseq.SeqNo++
 	cseq.MethodName = method
-
+	newRequest.SetTransport(inviteRequest.Transport())
 	return newRequest
 }
