@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/ghettovoice/gosip/log"
 	"github.com/sirupsen/logrus"
@@ -35,6 +36,7 @@ func (ml *MyLogger) Level() string {
 
 var (
 	loggers map[string]*MyLogger
+	mu      sync.Mutex
 )
 
 func init() {
@@ -42,6 +44,8 @@ func init() {
 }
 
 func NewLogrusLogger(level log.Level, prefix string, fields log.Fields) log.Logger {
+	defer mu.Unlock()
+	mu.Lock()
 	if logger, found := loggers[prefix]; found {
 		return logger.Logger.WithPrefix(prefix)
 	}
@@ -64,6 +68,8 @@ func NewLogrusLogger(level log.Level, prefix string, fields log.Fields) log.Logg
 }
 
 func SetLogLevel(prefix string, level log.Level) error {
+	defer mu.Unlock()
+	mu.Lock()
 	if logger, found := loggers[prefix]; found {
 		logger.level = level
 		logger.Logger.SetLevel(level)
