@@ -30,6 +30,7 @@ type Session struct {
 	remoteURI      sip.Address
 	remoteTarget   sip.Uri
 	logger         log.Logger
+	stateHandler   func(status Status)
 }
 
 func NewInviteSession(reqcb RequestCallback, uaType string,
@@ -191,10 +192,19 @@ func (s *Session) StoreTransaction(tx sip.Transaction) {
 	s.transaction = tx
 }
 
+func (s *Session) SetStateHandler(handler func(status Status)) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	s.stateHandler = handler
+}
+
 func (s *Session) SetState(status Status) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	s.status = status
+	if s.stateHandler != nil {
+		s.stateHandler(status)
+	}
 }
 
 func (s *Session) Status() Status {
