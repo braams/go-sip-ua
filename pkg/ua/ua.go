@@ -145,10 +145,10 @@ func (ua *UserAgent) SendRegister(profile *account.Profile, recipient sip.SipUri
 }
 
 func (ua *UserAgent) Invite(profile *account.Profile, target sip.Uri, recipient sip.SipUri, body *string) (*session.Session, error) {
-	return ua.InviteWithContext(context.TODO(), profile, target, recipient, body)
+	return ua.InviteWithContext(context.TODO(), profile, target, recipient, body, nil)
 }
 
-func (ua *UserAgent) InviteWithContext(ctx context.Context, profile *account.Profile, target sip.Uri, recipient sip.SipUri, body *string) (*session.Session, error) {
+func (ua *UserAgent) InviteWithContext(ctx context.Context, profile *account.Profile, target sip.Uri, recipient sip.SipUri, body *string, callID *sip.CallID) (*session.Session, error) {
 
 	from := &sip.Address{
 		DisplayName: sip.String{Str: profile.DisplayName},
@@ -162,7 +162,7 @@ func (ua *UserAgent) InviteWithContext(ctx context.Context, profile *account.Pro
 		Uri: target,
 	}
 
-	request, err := ua.buildRequest(sip.INVITE, from, to, contact, recipient, profile.Routes, nil)
+	request, err := ua.buildRequest(sip.INVITE, from, to, contact, recipient, profile.Routes, callID)
 	if err != nil {
 		ua.Log().Errorf("INVITE: err = %v", err)
 		return nil, err
