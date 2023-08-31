@@ -6,6 +6,7 @@ require (
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/ghettovoice/gosip v0.0.0-20230322091832-d77de1c97f89
+	github.com/gobwas/ws v1.3.0
 	github.com/google/uuid v1.3.0
 	github.com/pixelbender/go-sdp v1.1.0
 	github.com/sirupsen/logrus v1.9.0
@@ -15,4 +16,4 @@ require (
 	google.golang.org/api v0.114.0
 )
 
-replace github.com/ghettovoice/gosip v0.0.0-20230322091832-d77de1c97f89 => github.com/braams/gosip v0.0.0-20230704142834-addf71de8989
+replace github.com/ghettovoice/gosip v0.0.0-20230322091832-d77de1c97f89 => github.com/braams/gosip v0.0.0-20230830154329-fe41658c74f4

@@ -153,15 +153,12 @@ func (s *SipStack) Log() log.Logger {
 	return s.log
 }
 
-// ListenTLS starts serving listeners on the provided address
-func (s *SipStack) ListenTLS(protocol string, listenAddr string, options *transport.TLSConfig) error {
+// Listen starts serving listeners on the provided address
+func (s *SipStack) Listen(protocol string, listenAddr string, options ...transport.ListenOption) error {
 	var err error
 	network := strings.ToUpper(protocol)
-	if options != nil {
-		err = s.tp.Listen(network, listenAddr, options)
-	} else {
-		err = s.tp.Listen(network, listenAddr)
-	}
+
+	err = s.tp.Listen(network, listenAddr, options...)
 	if err == nil {
 		target, err := transport.NewTargetFromAddr(listenAddr)
 		if err != nil {
@@ -173,10 +170,6 @@ func (s *SipStack) ListenTLS(protocol string, listenAddr string, options *transp
 		}
 	}
 	return err
-}
-
-func (s *SipStack) Listen(protocol string, listenAddr string) error {
-	return s.ListenTLS(protocol, listenAddr, nil)
 }
 
 func (s *SipStack) Connect(url string, header http.Header) error {
