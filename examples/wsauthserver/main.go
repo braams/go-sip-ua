@@ -71,7 +71,7 @@ func (a *Authenticator) NewUpgrader(conn net.Conn) ws.Upgrader {
 		OnBeforeUpgrade: func() (header ws.HandshakeHeader, err error) {
 			// any checks here
 			if len(c.headers) > 0 {
-				return ws.HandshakeHeaderHTTP(map[string][]string{}), nil
+				return ws.HandshakeHeaderHTTP(http.Header{"Foo": []string{"Bar"}}), nil
 			} else {
 				return nil, ws.RejectConnectionError(ws.RejectionStatus(http.StatusForbidden))
 			}
@@ -106,6 +106,8 @@ func main() {
 
 		switch state {
 		case session.InviteReceived:
+			//sess.ProvideAnswer(sess.RemoteSdp())
+			//sess.Accept(sip.StatusCode(200))
 
 		case session.Canceled:
 			fallthrough
@@ -120,8 +122,23 @@ func main() {
 		logger.Infof("RegisterStateHandler: user => %s, state => %v, expires => %v", state.Account.AuthInfo.AuthUser, state.StatusCode, state.Expiration)
 
 	}
-
+	stack.OnRequest("REGISTER", handleRegister)
 	<-stop
 
 	ua.Shutdown()
+}
+
+func handleRegister(request sip.Request, tx sip.ServerTransaction) {
+	logger.Infof("handleRegister")
+	headers := request.GetHeaders("Expires")
+
+	var expires sip.Expires = 0
+	if len(headers) > 0 {
+		expires = *headers[0].(*sip.Expires)
+	}
+
+	resp := sip.NewResponseFromRequest(request.MessageID(), request, 200, "OK", "")
+	utils.BuildContactHeader("Contact", request, resp, &expires)
+	tx.Respond(resp)
+
 }

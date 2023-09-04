@@ -61,7 +61,7 @@ func main() {
 		logger.Panic(err)
 	}
 
-	if err := stack.ListenTLS("wss", "0.0.0.0:5091", nil); err != nil {
+	if err := stack.Listen("wss", "0.0.0.0:5091", nil); err != nil {
 		logger.Panic(err)
 	}
 
